@@ -1,65 +1,86 @@
 buildscript {
-	ext {
-		springBootVersion = '2.2.0.RELEASE'
-	}
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	}
-}
-plugins {
-	id 'org.springframework.boot' version '2.2.0.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
-	id 'org.asciidoctor.convert' version '1.5.8'
-	id 'java'
+    ext {
+        springBootVersion = '2.2.0.RELEASE'
+        springCloudVersion = 'Finchley.SR1'
+    }
+    repositories {
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
 }
 
-group = 'com.example'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+// 所有模块 项目的通用配置
+allprojects {
+    // 插件
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    // 制定jdk版本号
+    group = 'com.example'
+    version = '0.0.1-SNAPSHOT'
+    sourceCompatibility = 1.8
+
+    // maven仓库
+    repositories {
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+        jcenter()
+        mavenCentral()
+    }
+
+    //指定编码格式
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+
+    dependencies {
+        compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+        testCompile('org.springframework.boot:spring-boot-starter-test')
+        testCompile("junit:junit:4.12")
+    }
+    // spring cloud 依赖
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
+    }
 }
 
-repositories {
-	mavenCentral()
-	maven { url 'https://repo.spring.io/milestone' }
-}
-
-ext {
-	set('snippetsDir', file("build/generated-snippets"))
-	set('springCloudVersion', "Hoxton.M3")
-}
-
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web-services'
-	implementation 'org.springframework.cloud:spring-cloud-starter'
-	implementation 'org.springframework.session:spring-session-core'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
-	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
-}
-
-dependencyManagement {
-	imports {
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-	}
-}
-
-test {
-	outputs.dir snippetsDir
-	useJUnitPlatform()
-}
-
-asciidoctor {
-	inputs.dir snippetsDir
-	dependsOn test
+// 子模块 项目的统一配置  数据库以及其他开发依赖包
+subprojects {
+    apply plugin: 'java'
+    ext {
+        // mysqlConnectorVersion = "8.0.13"
+        // mybatisStarterVersion = "1.3.2"
+        // fastjsonVersion = "1.2.58"
+    }
+    dependencies {
+        compile(
+                // "javax.servlet:javax.servlet-api:4.0.1",
+                // spring boot
+                "org.springframework.boot:spring-boot-starter-web:${springBootVersion}",
+                // Log4j2
+                // "org.springframework.boot:spring-boot-starter-log4j2:${springBootVersion}",
+                // fastJson
+                // "com.alibaba:fastjson:${fastjsonVersion}",
+                // Apache Commons
+                // "org.apache.commons:commons-lang3:3.8.1",
+                // JDBC Driver
+                // "mysql:mysql-connector-java:${mysqlConnectorVersion}",
+                // Mybatis
+                // "org.mybatis.spring.boot:mybatis-spring-boot-starter:${mybatisStarterVersion}"
+        )
+    }
+    /*jar {
+        manifest.attributes provider: 'gradle'
+    }
+    configurations {
+        //移除spring boot 默认logger依赖
+        all*.exclude module: 'spring-boot-starter-logging'
+    }*/
 }

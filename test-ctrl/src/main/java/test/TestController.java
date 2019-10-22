@@ -1,4 +1,4 @@
-package com.example.test;
+package test;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,6 +8,6 @@ public class TestController {
 
     @RequestMapping("/")
     public String getString() {
-        return "good test";
+        return "good test .......";
     }
 }

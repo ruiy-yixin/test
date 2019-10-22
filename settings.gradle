@@ -1,1 +1,8 @@
 rootProject.name = 'test'
+include 'test-util'
+include 'test-core'
+include 'test-ctrl'
+include 'test-data'
+include 'test-config'
+include 'test-base'
+
