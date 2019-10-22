@@ -8,6 +8,6 @@ public class TestController {
 
     @RequestMapping("/")
     public String getString() {
-        return "ctrl test successed";
+        return "core test successed";
     }
 }
